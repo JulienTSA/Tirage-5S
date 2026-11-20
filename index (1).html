@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tirage 5S — Zone Grosse Commande</title>
+  <style>
+    :root {
+      --bg-app: #090e1a;
+      --bg-panel: #111827;
+      --bg-panel-elevated: #182235;
+      --bg-card-inactive: #0d1320;
+      --border-subtle: #243044;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-gold: #f59e0b;
+      --accent-gold-light: #fbbf24;
+      --accent-green: #10b981;
+      --accent-green-light: #34d399;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    button, input {
+      font-family: inherit;
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .app-header {
+      background-color: rgba(17, 24, 39, 0.96);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 14px 24px;
+    }
+
+    .header-inner {
+      max-width: 1580px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fbbf24, #d97706);
+      color: #090e1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand-title span.highlight {
+      color: var(--accent-gold-light);
+    }
+
+    .badge-rituel {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green-light);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .brand-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill-info {
+      background: var(--bg-panel-elevated);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot-pulse {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .btn-sound {
+      background: var(--bg-panel-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 8px 13px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn-sound:hover {
+      background: #22304a;
+      border-color: #3b4f70;
+    }
+
+    .main-layout {
+      max-width: 1580px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 22px 24px 40px;
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1120px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    .stage-box {
+      background: linear-gradient(145deg, #131c2e 0%, #0e1524 100%);
+      border: 1px solid #2b3952;
+      border-radius: var(--radius-lg);
+      padding: 26px 28px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .stage-info {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .stage-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: var(--accent-gold-light);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .stage-headline {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      min-height: 2.6rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stage-subtext {
+      color: var(--text-muted);
+      font-size: 0.94rem;
+      margin-top: 6px;
+    }
+
+    .stage-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-launch {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%);
+      color: #090e1a;
+      border: none;
+      border-radius: 16px;
+      padding: 18px 30px;
+      font-size: 1.12rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    }
+
+    .btn-launch:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(251, 191, 36, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .btn-launch:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn-launch:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .stage-hint {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .inline-banner {
+      width: 100%;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fecaca;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .inline-banner.visible {
+      display: flex;
+    }
+
+    .toolbar-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toolbar-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .add-form {
+      display: flex;
+      flex: 1;
+      min-width: 260px;
+      gap: 8px;
+    }
+
+    .input-dark {
+      flex: 1;
+      background: #090e1a;
+      border: 1px solid #314059;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .input-dark:focus {
+      border-color: var(--accent-gold-light);
+    }
+
+    .input-dark::placeholder {
+      color: var(--text-dim);
+    }
+
+    .btn-tool {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-add {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: var(--accent-gold-light);
+    }
+
+    .btn-add:hover {
+      background: rgba(245, 158, 11, 0.28);
+    }
+
+    .btn-check-all {
+      background: rgba(16, 185, 129, 0.14);
+      border-color: rgba(16, 185, 129, 0.38);
+      color: var(--accent-green-light);
+    }
+
+    .btn-check-all:hover {
+      background: rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-uncheck-all {
+      background: var(--bg-panel-elevated);
+      border-color: var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .btn-uncheck-all:hover {
+      background: #233047;
+      color: #ffffff;
+    }
+
+    .btn-reset {
+      background: var(--bg-panel-elevated);
+      border-color: var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .btn-reset:hover {
+      background: rgba(239, 68, 68, 0.16);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    .btn-reset.confirming {
+      background: #dc2626;
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    .toolbar-footer {
+      border-top: 1px solid rgba(36, 48, 68, 0.7);
+      padding-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .stations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .station-card {
+      border-radius: 18px;
+      padding: 18px;
+      border: 2px solid var(--border-subtle);
+      background-color: var(--bg-card-inactive);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: transform 0.14s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .station-card.is-active {
+      background: linear-gradient(155deg, #132c26 0%, #101d28 100%);
+      border-color: rgba(16, 185, 129, 0.55);
+      box-shadow: 0 8px 20px rgba(6, 78, 59, 0.25);
+    }
+
+    .station-card.is-active:hover {
+      border-color: var(--accent-green-light);
+      transform: translateY(-2px);
+    }
+
+    .station-card.is-inactive {
+      background-color: #0b101b;
+      border-color: #1e293b;
+      opacity: 0.62;
+    }
+
+    .station-card.is-inactive:hover {
+      opacity: 0.85;
+      border-color: #334155;
+    }
+
+    .station-card.is-roulette {
+      transform: scale(1.04) translateY(-3px) !important;
+      border-color: #fbbf24 !important;
+      background: linear-gradient(145deg, #3b2d10 0%, #1e293b 100%) !important;
+      box-shadow: 0 0 28px rgba(251, 191, 36, 0.65) !important;
+      opacity: 1 !important;
+      z-index: 10;
+    }
+
+    .station-card.is-winner {
+      transform: scale(1.04) !important;
+      border-color: #fbbf24 !important;
+      background: linear-gradient(145deg, #134e3a 0%, #3a2b0d 100%) !important;
+      box-shadow: 0 0 36px rgba(251, 191, 36, 0.7), 0 0 16px rgba(16, 185, 129, 0.5) !important;
+      opacity: 1 !important;
+      z-index: 15;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .native-checkbox {
+      width: 22px;
+      height: 22px;
+      accent-color: #10b981;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .status-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 9px;
+      border-radius: 7px;
+    }
+
+    .is-active .status-pill {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+    }
+
+    .is-inactive .status-pill {
+      background: #1e293b;
+      color: #64748b;
+    }
+
+    .is-winner .status-pill {
+      background: #fbbf24;
+      color: #090e1a;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .icon-btn.btn-del:hover {
+      background: rgba(239, 68, 68, 0.18);
+      color: #f87171;
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .station-name {
+      font-size: 1.28rem;
+      font-weight: 800;
+      color: #ffffff;
+      word-break: break-word;
+    }
+
+    .is-inactive .station-name {
+      color: #64748b;
+      text-decoration: line-through;
+    }
+
+    .station-index {
+      font-size: 0.76rem;
+      font-family: monospace;
+      color: var(--text-dim);
+    }
+
+    .station-operator {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 1.25rem;
+    }
+
+    .station-operator.has-op {
+      color: var(--accent-gold-light);
+      font-weight: 600;
+    }
+
+    .history-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+      position: sticky;
+      top: 92px;
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .history-title {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .history-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 540px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      background: #0b101b;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .history-item.latest {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(16, 185, 129, 0.1));
+      border-color: rgba(245, 158, 11, 0.45);
+    }
+
+    .history-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .history-station {
+      font-weight: 800;
+      font-size: 0.94rem;
+      color: #ffffff;
+    }
+
+    .history-op-tag {
+      font-size: 0.74rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #1e293b;
+      color: var(--accent-gold-light);
+      font-weight: 600;
+    }
+
+    .history-ratio {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #182235;
+      color: var(--text-muted);
+    }
+
+    .history-date {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .empty-history {
+      border: 1px dashed #2b3952;
+      border-radius: 14px;
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 15, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      border-radius: 20px;
+      max-width: 430px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-cancel {
+      background: var(--bg-panel-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .btn-save {
+      background: var(--accent-gold);
+      color: #090e1a;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti-canvas"></canvas>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">5S</div>
+        <div>
+          <div class="brand-title">
+            <span>TIRAGE 5S — ZONE <span class="highlight">GROSSE COMMANDE</span></span>
+            <span class="badge-rituel">Rituel quotidien d'équipe</span>
+          </div>
+          <p class="brand-subtitle">Cochez les postes actifs du jour, ajoutez ou retirez des postes à la volée, puis lancez le tirage</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="pill-info">
+          <span class="dot-pulse"></span>
+          <span id="active-count-badge">8 / 8 postes actifs</span>
+        </div>
+        <button type="button" id="btn-toggle-sound" class="btn-sound" title="Activer ou couper les effets sonores">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label">Son ON</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    <div class="left-column">
+      <section class="stage-box">
+        <div class="stage-info">
+          <div class="stage-kicker" id="stage-kicker">🎲 Prêt pour le tirage</div>
+          <div class="stage-headline" id="stage-headline">En attente du lancement</div>
+          <p class="stage-subtext" id="stage-subtext">Seuls les postes cochés participent au tirage au sort.</p>
+        </div>
+
+        <div class="stage-action">
+          <button type="button" id="btn-launch" class="btn-launch">
+            <span>▶</span>
+            <span>LANCER LE TIRAGE</span>
+          </button>
+          <span class="stage-hint">Raccourci : touche Espace</span>
+        </div>
+
+        <div id="inline-banner" class="inline-banner">
+          <span id="inline-banner-text">⚠️ Aucun poste coché ! Cochez au moins 1 poste pour lancer le tirage.</span>
+        </div>
+      </section>
+
+      <section class="toolbar-box">
+        <div class="toolbar-row">
+          <form id="add-station-form" class="add-form">
+            <input
+              type="text"
+              id="new-station-input"
+              class="input-dark"
+              placeholder="Nouveau poste (ex: Poste 9, Zone Filmage, Quai B...)"
+              maxlength="40"
+            />
+            <button type="submit" id="btn-add-station" class="btn-tool btn-add">
+              <span>+</span>
+              <span>Ajouter un poste</span>
+            </button>
+          </form>
+
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <button type="button" id="btn-check-all" class="btn-tool btn-check-all">☑ Tout cocher</button>
+            <button type="button" id="btn-uncheck-all" class="btn-tool btn-uncheck-all">☐ Tout décocher</button>
+            <button type="button" id="btn-reset-default" class="btn-tool btn-reset">↺ Réinitialiser (8 postes)</button>
+          </div>
+        </div>
+
+        <div class="toolbar-footer">
+          <span>Astuce : cliquez sur une carte ou sa case pour l'inclure/exclure du tirage.</span>
+          <span id="total-stations-label">8 postes configurés</span>
+        </div>
+      </section>
+
+      <section id="stations-grid" class="stations-grid" aria-label="Liste des postes 5S"></section>
+    </div>
+
+    <aside class="history-panel">
+      <div class="history-header">
+        <div>
+          <h2 class="history-title">Historique des tirages</h2>
+          <p class="history-sub">Derniers postes désignés</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="history-count-badge" class="pill-info" style="padding:4px 10px; font-size:0.78rem;">0</span>
+          <button type="button" id="btn-clear-history" class="btn-tool btn-uncheck-all" style="padding:5px 10px; font-size:0.76rem;">Vider</button>
+        </div>
+      </div>
+
+      <div id="history-list" class="history-list">
+        <div class="empty-history">
+          Aucun tirage effectué pour le moment.<br>
+          Cliquez sur <strong>Lancer le tirage</strong> pour démarrer.
+        </div>
+      </div>
+
+      <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end;">
+        <button type="button" id="btn-clear-history-bottom" class="btn-tool btn-uncheck-all" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 0.82rem;">🗑 Effacer l'historique</button>
+      </div>
+    </aside>
+  </main>
+
+  <div id="edit-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="edit-modal-title" class="modal-title">Modifier le poste</h3>
+        <button type="button" id="btn-close-modal" class="icon-btn" aria-label="Fermer">✕</button>
+      </div>
+      <form id="edit-station-form">
+        <div class="form-group">
+          <label for="edit-name-input" class="form-label">Nom du poste</label>
+          <input type="text" id="edit-name-input" class="input-dark" maxlength="40" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-operator-input" class="form-label">Opérateur référent / du jour (optionnel)</label>
+          <input type="text" id="edit-operator-input" class="input-dark" maxlength="40" placeholder="Ex: Julien, Équipe Matin..." />
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-modal" class="btn-cancel">Annuler</button>
+          <button type="submit" class="btn-save">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_STATIONS = 'tirage_5s_grosse_commande_stations_v1';
+      const STORAGE_KEY_HISTORY = 'tirage_5s_grosse_commande_history_v1';
+      const STORAGE_KEY_SOUND = 'tirage_5s_grosse_commande_sound_v1';
+
+      const DEFAULT_STATIONS = [
+        { id: 'poste-1', name: 'Poste 1', operator: '', active: true },
+        { id: 'poste-2', name: 'Poste 2', operator: '', active: true },
+        { id: 'poste-3', name: 'Poste 3', operator: '', active: true },
+        { id: 'poste-4', name: 'Poste 4', operator: '', active: true },
+        { id: 'poste-5', name: 'Poste 5', operator: '', active: true },
+        { id: 'poste-6', name: 'Poste 6', operator: '', active: true },
+        { id: 'poste-7', name: 'Poste 7', operator: '', active: true },
+        { id: 'poste-8', name: 'Poste 8', operator: '', active: true }
+      ];
+
+      let memoryStorage = {};
+      function readStorage(key) {
+        try {
+          if (window.localStorage) {
+            const val = window.localStorage.getItem(key);
+            if (val !== null) return val;
+          }
+        } catch (e) {}
+        return memoryStorage[key] || null;
+      }
+
+      function writeStorage(key, value) {
+        memoryStorage[key] = value;
+        try {
+          if (window.localStorage) {
+            window.localStorage.setItem(key, value);
+          }
+        } catch (e) {}
+      }
+
+      function loadStations() {
+        try {
+          const raw = readStorage(STORAGE_KEY_STATIONS);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              return parsed.map((item, idx) => ({
+                id: String(item.id || ('poste-' + (idx + 1) + '-' + Date.now())),
+                name: String(item.name || ('Poste ' + (idx + 1))).trim() || ('Poste ' + (idx + 1)),
+                operator: String(item.operator || '').trim(),
+                active: Boolean(item.active)
+              }));
+            }
+          }
+        } catch (e) {}
+        return DEFAULT_STATIONS.map(s => ({ ...s }));
+      }
+
+      function loadHistory() {
+        try {
+          const raw = readStorage(STORAGE_KEY_HISTORY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+          }
+        } catch (e) {}
+        return [];
+      }
+
+      let stations = loadStations();
+      let history = loadHistory();
+      let soundEnabled = readStorage(STORAGE_KEY_SOUND) !== 'false';
+      let isSpinning = false;
+      let rouletteTimer = null;
+      let currentRouletteId = null;
+      let currentWinnerId = null;
+      let editingStationId = null;
+      let resetConfirmTimer = null;
+      let clearHistoryConfirmTimer = null;
+
+      const stationsGrid = document.getElementById('stations-grid');
+      const historyList = document.getElementById('history-list');
+      const activeCountBadge = document.getElementById('active-count-badge');
+      const historyCountBadge = document.getElementById('history-count-badge');
+      const totalStationsLabel = document.getElementById('total-stations-label');
+      const btnLaunch = document.getElementById('btn-launch');
+      const stageKicker = document.getElementById('stage-kicker');
+      const stageHeadline = document.getElementById('stage-headline');
+      const stageSubtext = document.getElementById('stage-subtext');
+      const inlineBanner = document.getElementById('inline-banner');
+      const inlineBannerText = document.getElementById('inline-banner-text');
+      const addForm = document.getElementById('add-station-form');
+      const newStationInput = document.getElementById('new-station-input');
+      const btnCheckAll = document.getElementById('btn-check-all');
+      const btnUncheckAll = document.getElementById('btn-uncheck-all');
+      const btnResetDefault = document.getElementById('btn-reset-default');
+      const btnClearHistory = document.getElementById('btn-clear-history');
+      const btnToggleSound = document.getElementById('btn-toggle-sound');
+      const soundIcon = document.getElementById('sound-icon');
+      const soundLabel = document.getElementById('sound-label');
+      const editModal = document.getElementById('edit-modal');
+      const editForm = document.getElementById('edit-station-form');
+      const editNameInput = document.getElementById('edit-name-input');
+      const editOperatorInput = document.getElementById('edit-operator-input');
+      const btnCloseModal = document.getElementById('btn-close-modal');
+      const btnCancelModal = document.getElementById('btn-cancel-modal');
+      const confettiCanvas = document.getElementById('confetti-canvas');
+      const confettiCtx = confettiCanvas.getContext('2d');
+
+      let audioCtx = null;
+      function getAudioContext() {
+        if (!soundEnabled) return null;
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return null;
+          if (!audioCtx) audioCtx = new AudioContextClass();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          return audioCtx;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function playTickSound(pitchFactor = 1) {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(520 * pitchFactor, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(220 * pitchFactor, ctx.currentTime + 0.045);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.05);
+        } catch (e) {}
+      }
+
+      function playWinFanfare() {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          try {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const startTime = ctx.currentTime + idx * 0.09;
+            const duration = idx === notes.length - 1 ? 0.42 : 0.14;
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, startTime);
+            gain.gain.setValueAtTime(0.12, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration + 0.02);
+          } catch (e) {}
+        });
+      }
+
+      let confettiParticles = [];
+      let confettiAnimId = null;
+
+      function resizeConfettiCanvas() {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+      }
+
+      function launchConfetti() {
+        resizeConfettiCanvas();
+        const colors = ['#fbbf24', '#10b981', '#38bdf8', '#f472b6', '#a78bfa', '#ffffff'];
+        confettiParticles = [];
+        for (let i = 0; i < 130; i++) {
+          confettiParticles.push({
+            x: Math.random() * confettiCanvas.width,
+            y: -20 - Math.random() * confettiCanvas.height * 0.4,
+            w: 7 + Math.random() * 8,
+            h: 5 + Math.random() * 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 5,
+            vy: 2.5 + Math.random() * 4.5,
+            rot: Math.random() * Math.PI * 2,
+            vRot: (Math.random() - 0.5) * 0.2,
+            alpha: 1
+          });
+        }
+        if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+
+        function renderConfetti() {
+          confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+          let alive = false;
+          for (const p of confettiParticles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.06;
+            p.rot += p.vRot;
+            if (p.y > confettiCanvas.height - 60) p.alpha -= 0.025;
+            if (p.alpha > 0 && p.y < confettiCanvas.height + 30) {
+              alive = true;
+              confettiCtx.save();
+              confettiCtx.globalAlpha = Math.max(0, p.alpha);
+              confettiCtx.translate(p.x, p.y);
+              confettiCtx.rotate(p.rot);
+              confettiCtx.fillStyle = p.color;
+              confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              confettiCtx.restore();
+            }
+          }
+          if (alive) {
+            confettiAnimId = requestAnimationFrame(renderConfetti);
+          } else {
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+          }
+        }
+        confettiAnimId = requestAnimationFrame(renderConfetti);
+      }
+
+      window.addEventListener('resize', resizeConfettiCanvas);
+
+      function saveAll() {
+        writeStorage(STORAGE_KEY_STATIONS, JSON.stringify(stations));
+        writeStorage(STORAGE_KEY_HISTORY, JSON.stringify(history));
+      }
+
+      function getActiveStations() {
+        return stations.filter(s => s.active);
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function updateSoundUI() {
+        soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+        soundLabel.textContent = soundEnabled ? 'Son ON' : 'Son OFF';
+        writeStorage(STORAGE_KEY_SOUND, String(soundEnabled));
+      }
+
+      function updateHeaderAndControls() {
+        const activeCount = getActiveStations().length;
+        const totalCount = stations.length;
+        activeCountBadge.textContent = activeCount + ' / ' + totalCount + ' postes actifs';
+        totalStationsLabel.textContent = totalCount + (totalCount > 1 ? ' postes configurés' : ' poste configuré');
+        btnLaunch.disabled = isSpinning || activeCount === 0;
+
+        if (activeCount === 0 && !isSpinning) {
+          inlineBannerText.textContent = '⚠️ Aucun poste coché ! Cochez au moins 1 poste pour lancer le tirage.';
+          inlineBanner.classList.add('visible');
+        } else if (!isSpinning) {
+          inlineBanner.classList.remove('visible');
+        }
+      }
+
+      function renderStations() {
+        stationsGrid.innerHTML = '';
+
+        stations.forEach((station, idx) => {
+          const card = document.createElement('div');
+          card.className = 'station-card ' + (station.active ? 'is-active' : 'is-inactive');
+          if (station.id === currentRouletteId) card.classList.add('is-roulette');
+          if (station.id === currentWinnerId) card.classList.add('is-winner');
+
+          const statusText = station.id === currentWinnerId
+            ? '🏆 Désigné'
+            : (station.active ? 'Actif' : 'Exclu');
+
+          const opHtml = station.operator
+            ? '<div class="station-operator has-op">👤 ' + escapeHtml(station.operator) + '</div>'
+            : '<div class="station-operator">Aucun référent assigné</div>';
+
+          card.innerHTML =
+            '<div class="card-top">' +
+              '<label class="checkbox-label">' +
+                '<input type="checkbox" class="native-checkbox" ' + (station.active ? 'checked' : '') + ' ' + (isSpinning ? 'disabled' : '') + ' />' +
+                '<span class="status-pill">' + statusText + '</span>' +
+              '</label>' +
+              '<div class="card-actions">' +
+                '<button type="button" class="icon-btn btn-edit" title="Renommer / Référent">✎</button>' +
+                '<button type="button" class="icon-btn btn-del" title="Supprimer le poste">🗑</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="card-body">' +
+              '<div class="card-title-row">' +
+                '<span class="station-name">' + escapeHtml(station.name) + '</span>' +
+                '<span class="station-index">#' + String(idx + 1).padStart(2, '0') + '</span>' +
+              '</div>' +
+              opHtml +
+            '</div>';
+
+          const checkbox = card.querySelector('.native-checkbox');
+          const btnEdit = card.querySelector('.btn-edit');
+          const btnDel = card.querySelector('.btn-del');
+
+          checkbox.addEventListener('change', (e) => {
+            e.stopPropagation();
+            if (isSpinning) return;
+            station.active = checkbox.checked;
+            if (!station.active && currentWinnerId === station.id) {
+              currentWinnerId = null;
+            }
+            saveAll();
+            renderStations();
+            updateHeaderAndControls();
+          });
+
+          card.addEventListener('click', (e) => {
+            if (isSpinning) return;
+            if (e.target.closest('.card-actions') || e.target.classList.contains('native-checkbox') || e.target.tagName === 'LABEL') return;
+            station.active = !station.active;
+            if (!station.active && currentWinnerId === station.id) {
+              currentWinnerId = null;
+            }
+            saveAll();
+            renderStations();
+            updateHeaderAndControls();
+          });
+
+          btnEdit.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isSpinning) return;
+            openEditModal(station.id);
+          });
+
+          btnDel.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isSpinning) return;
+            deleteStation(station.id);
+          });
+
+          stationsGrid.appendChild(card);
+        });
+      }
+
+      function renderHistory() {
+        historyCountBadge.textContent = String(history.length);
+        if (!history.length) {
+          historyList.innerHTML =
+            '<div class="empty-history">' +
+              'Aucun tirage effectué pour le moment.<br>' +
+              'Cliquez sur <strong>Lancer le tirage</strong> pour démarrer.' +
+            '</div>';
+          return;
+        }
+
+        historyList.innerHTML = history.map((entry, index) => {
+          const opBadge = entry.operator
+            ? '<span class="history-op-tag">' + escapeHtml(entry.operator) + '</span>'
+            : '';
+          return (
+            '<div class="history-item ' + (index === 0 ? 'latest' : '') + '">' +
+              '<div class="history-item-top">' +
+                '<span class="history-station">' + (index === 0 ? '🏆 ' : '') + escapeHtml(entry.stationName) + '</span>' +
+                '<span class="history-ratio">' + escapeHtml(entry.ratio) + '</span>' +
+              '</div>' +
+              '<div class="history-date">' +
+                '<span>' + escapeHtml(entry.dateLabel) + '</span>' +
+                opBadge +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      }
+
+      function addStation(name) {
+        const cleanName = String(name || '').trim();
+        if (!cleanName) return;
+        stations.push({
+          id: 'poste-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+          name: cleanName,
+          operator: '',
+          active: true
+        });
+        saveAll();
+        renderStations();
+        updateHeaderAndControls();
+      }
+
+      function deleteStation(id) {
+        stations = stations.filter(s => s.id !== id);
+        if (currentWinnerId === id) currentWinnerId = null;
+        if (currentRouletteId === id) currentRouletteId = null;
+        saveAll();
+        renderStations();
+        updateHeaderAndControls();
+      }
+
+      function setAllActive(state) {
+        if (isSpinning) return;
+        stations = stations.map(s => ({ ...s, active: state }));
+        if (!state) currentWinnerId = null;
+        saveAll();
+        renderStations();
+        updateHeaderAndControls();
+      }
+
+      function resetToDefaultStations() {
+        if (isSpinning) return;
+        stations = DEFAULT_STATIONS.map(s => ({ ...s }));
+        currentWinnerId = null;
+        currentRouletteId = null;
+        saveAll();
+        renderStations();
+        updateHeaderAndControls();
+        stageKicker.textContent = '🎲 Prêt pour le tirage';
+        stageHeadline.textContent = 'En attente du lancement';
+        stageSubtext.textContent = '8 postes par défaut restaurés. Seuls les postes cochés participent.';
+      }
+
+      function clearHistory() {
+        if (isSpinning) return;
+        history = [];
+        saveAll();
+        renderHistory();
+      }
+
+      function openEditModal(id) {
+        const station = stations.find(s => s.id === id);
+        if (!station) return;
+        editingStationId = id;
+        editNameInput.value = station.name;
+        editOperatorInput.value = station.operator || '';
+        editModal.classList.add('open');
+        setTimeout(() => editNameInput.focus(), 40);
+      }
+
+      function closeEditModal() {
+        editModal.classList.remove('open');
+        editingStationId = null;
+      }
+
+      function startRoulette() {
+        if (isSpinning) return;
+        const pool = getActiveStations();
+        if (!pool.length) {
+          inlineBannerText.textContent = '⚠️ Aucun poste coché ! Cochez au moins 1 poste avant de lancer le tirage.';
+          inlineBanner.classList.add('visible');
+          playTickSound(0.6);
+          return;
+        }
+
+        inlineBanner.classList.remove('visible');
+        isSpinning = true;
+        currentWinnerId = null;
+        updateHeaderAndControls();
+
+        const winner = pool[Math.floor(Math.random() * pool.length)];
+        const totalSteps = pool.length === 1 ? 8 : Math.max(18, pool.length * 3);
+        let step = 0;
+
+        stageKicker.textContent = '⚡ Tirage en cours';
+        stageSubtext.textContent = 'Sélection aléatoire parmi ' + pool.length + ' poste(s) actif(s)...';
+
+        function tick() {
+          step++;
+          const isLastStep = step >= totalSteps;
+          const candidate = isLastStep ? winner : pool[Math.floor(Math.random() * pool.length)];
+          currentRouletteId = candidate.id;
+          stageHeadline.textContent = candidate.name;
+          renderStations();
+
+          if (!isLastStep) {
+            playTickSound(0.85 + (step / totalSteps) * 0.45);
+            const progress = step / totalSteps;
+            const delay = Math.round(55 + Math.pow(progress, 2.4) * 290);
+            rouletteTimer = setTimeout(tick, delay);
+          } else {
+            finishRoulette(winner, pool.length);
+          }
+        }
+
+        tick();
+      }
+
+      function finishRoulette(winner, poolSize) {
+        clearTimeout(rouletteTimer);
+        currentRouletteId = null;
+        currentWinnerId = winner.id;
+        isSpinning = false;
+
+        stageKicker.textContent = '🏆 Les jeux sont faits !';
+        stageHeadline.innerHTML =
+          '<span>' + escapeHtml(winner.name) + '</span>' +
+          (winner.operator ? '<span class="badge-rituel">👤 ' + escapeHtml(winner.operator) + '</span>' : '');
+        stageSubtext.textContent = 'Poste 5S désigné sur ' + poolSize + ' poste(s) actif(s).';
+
+        const now = new Date();
+        const dateLabel = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) +
+          ' à ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+        history.unshift({
+          id: 'draw-' + Date.now(),
+          stationName: winner.name,
+          operator: winner.operator || '',
+          ratio: '1/' + poolSize,
+          dateLabel
+        });
+        if (history.length > 40) history = history.slice(0, 40);
+
+        saveAll();
+        renderStations();
+        renderHistory();
+        updateHeaderAndControls();
+        playWinFanfare();
+        launchConfetti();
+      }
+
+      addForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (isSpinning) return;
+        const val = newStationInput.value.trim();
+        if (!val) {
+          newStationInput.focus();
+          return;
+        }
+        addStation(val);
+        newStationInput.value = '';
+        newStationInput.focus();
+      });
+
+      const btnClearHistoryBottom = document.getElementById('btn-clear-history-bottom');
+      const clearButtons = [btnClearHistory, btnClearHistoryBottom].filter(Boolean);
+
+      function resetClearButtonsState() {
+        clearButtons.forEach((btn) => {
+          btn.classList.remove('confirming');
+          btn.style.background = '';
+          btn.style.borderColor = '';
+          btn.style.color = '';
+          btn.textContent = btn.id === 'btn-clear-history-bottom' ? "🗑 Effacer l'historique" : 'Vider';
+        });
+      }
+
+      clearButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (isSpinning || !history.length) return;
+          if (!btn.classList.contains('confirming')) {
+            resetClearButtonsState();
+            btn.classList.add('confirming');
+            btn.style.background = '#dc2626';
+            btn.style.borderColor = '#ef4444';
+            btn.style.color = '#ffffff';
+            btn.textContent = 'Confirmer ?';
+            clearTimeout(clearHistoryConfirmTimer);
+            clearHistoryConfirmTimer = setTimeout(() => {
+              resetClearButtonsState();
+            }, 3500);
+          } else {
+            clearTimeout(clearHistoryConfirmTimer);
+            resetClearButtonsState();
+            clearHistory();
+          }
+        });
+      });
+
+      btnCheckAll.addEventListener('click', () => setAllActive(true));
+      btnUncheckAll.addEventListener('click', () => setAllActive(false));
+
+      btnResetDefault.addEventListener('click', () => {
+        if (isSpinning) return;
+        if (!btnResetDefault.classList.contains('confirming')) {
+          btnResetDefault.classList.add('confirming');
+          btnResetDefault.textContent = 'Confirmer (8 postes) ?';
+          clearTimeout(resetConfirmTimer);
+          resetConfirmTimer = setTimeout(() => {
+            btnResetDefault.classList.remove('confirming');
+            btnResetDefault.textContent = '↺ Réinitialiser (8 postes)';
+          }, 3500);
+        } else {
+          clearTimeout(resetConfirmTimer);
+          btnResetDefault.classList.remove('confirming');
+          btnResetDefault.textContent = '↺ Réinitialiser (8 postes)';
+          resetToDefaultStations();
+        }
+      });
+
+      btnToggleSound.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        updateSoundUI();
+        if (soundEnabled) playTickSound(1.1);
+      });
+
+      btnLaunch.addEventListener('click', startRoulette);
+
+      btnCloseModal.addEventListener('click', closeEditModal);
+      btnCancelModal.addEventListener('click', closeEditModal);
+      editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) closeEditModal();
+      });
+
+      editForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!editingStationId) return;
+        const station = stations.find(s => s.id === editingStationId);
+        if (station) {
+          const newName = editNameInput.value.trim();
+          if (newName) station.name = newName;
+          station.operator = editOperatorInput.value.trim();
+          saveAll();
+          renderStations();
+        }
+        closeEditModal();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !editModal.classList.contains('open')) {
+          const tag = document.activeElement && document.activeElement.tagName;
+          if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'BUTTON') {
+            e.preventDefault();
+            startRoulette();
+          }
+        } else if (e.key === 'Escape' && editModal.classList.contains('open')) {
+          closeEditModal();
+        }
+      });
+
+      updateSoundUI();
+      renderStations();
+      renderHistory();
+      updateHeaderAndControls();
+    })();
+  </script>
+</body>
+</html>
