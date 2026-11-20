@@ -5,18 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tirage 5S — Zone Grosse Commande</title>
   <style>
-    /* ==========================================================================
-       1. VARIABLES & DESIGN TOKENS (THÈME INDUSTRIEL SOMBRE HAUTE LISIBILITÉ)
-       ========================================================================== */
     :root {
       --bg-app: #090e1a;
       --bg-panel: #111827;
       --bg-panel-elevated: #182235;
-      --bg-card-active: #122823;
       --bg-card-inactive: #0d1320;
       --border-subtle: #243044;
-      --border-active: #10b981;
-      --border-highlight: #fbbf24;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
@@ -24,7 +18,6 @@
       --accent-gold-light: #fbbf24;
       --accent-green: #10b981;
       --accent-green-light: #34d399;
-      --accent-red: #ef4444;
       --radius-lg: 20px;
       --radius-md: 14px;
       --radius-sm: 10px;
@@ -52,9 +45,6 @@
       font-family: inherit;
     }
 
-    /* ==========================================================================
-       2. CANVAS CONFETTIS PLEIN ÉCRAN (SANS BIBLIOTHÈQUE EXTERNE)
-       ========================================================================== */
     #confetti-canvas {
       position: fixed;
       inset: 0;
@@ -64,9 +54,6 @@
       z-index: 9999;
     }
 
-    /* ==========================================================================
-       3. EN-TÊTE (HEADER)
-       ========================================================================== */
     .app-header {
       background-color: rgba(17, 24, 39, 0.96);
       border-bottom: 1px solid var(--border-subtle);
@@ -101,6 +88,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
       box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
       flex-shrink: 0;
     }
@@ -185,9 +174,6 @@
       border-color: #3b4f70;
     }
 
-    /* ==========================================================================
-       4. MISE EN PAGE PRINCIPALE (2 COLONNES PC WIDESCREEN)
-       ========================================================================== */
     .main-layout {
       max-width: 1580px;
       width: 100%;
@@ -212,9 +198,6 @@
       min-width: 0;
     }
 
-    /* ==========================================================================
-       5. SCÈNE DE TIRAGE ("LES JEUX SONT FAITS")
-       ========================================================================== */
     .stage-box {
       background: linear-gradient(145deg, #131c2e 0%, #0e1524 100%);
       border: 1px solid #2b3952;
@@ -226,8 +209,6 @@
       align-items: center;
       justify-content: space-between;
       gap: 22px;
-      position: relative;
-      overflow: hidden;
     }
 
     .stage-info {
@@ -298,10 +279,6 @@
       box-shadow: 0 14px 30px rgba(251, 191, 36, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6);
     }
 
-    .btn-launch:active:not(:disabled) {
-      transform: translateY(1px);
-    }
-
     .btn-launch:disabled {
       opacity: 0.4;
       cursor: not-allowed;
@@ -332,9 +309,6 @@
       display: flex;
     }
 
-    /* ==========================================================================
-       6. BARRE D'OUTILS DES POSTES (AJOUTER / TOUT COCHER / RÉINITIALISER)
-       ========================================================================== */
     .toolbar-box {
       background: var(--bg-panel);
       border: 1px solid var(--border-subtle);
@@ -454,9 +428,6 @@
       color: var(--text-muted);
     }
 
-    /* ==========================================================================
-       7. GRILLE DES CARTES DE POSTES
-       ========================================================================== */
     .stations-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -475,10 +446,8 @@
       justify-content: space-between;
       gap: 14px;
       transition: transform 0.14s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-      position: relative;
     }
 
-    /* État ACTIF (coché) : vert lumineux bien visible */
     .station-card.is-active {
       background: linear-gradient(155deg, #132c26 0%, #101d28 100%);
       border-color: rgba(16, 185, 129, 0.55);
@@ -490,7 +459,6 @@
       transform: translateY(-2px);
     }
 
-    /* État INACTIF (décoché) : grisé et titre barré */
     .station-card.is-inactive {
       background-color: #0b101b;
       border-color: #1e293b;
@@ -502,7 +470,6 @@
       border-color: #334155;
     }
 
-    /* Surbrillance pendant le défilement roulette */
     .station-card.is-roulette {
       transform: scale(1.04) translateY(-3px) !important;
       border-color: #fbbf24 !important;
@@ -512,7 +479,6 @@
       z-index: 10;
     }
 
-    /* Carte GAGNANTE finale ("Les jeux sont faits !") */
     .station-card.is-winner {
       transform: scale(1.04) !important;
       border-color: #fbbf24 !important;
@@ -536,7 +502,6 @@
       cursor: pointer;
     }
 
-    /* Vraie case à cocher native stylisée et ultra-lisible */
     .native-checkbox {
       width: 22px;
       height: 22px;
@@ -586,6 +551,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      font-size: 0.9rem;
       transition: background 0.15s, color 0.15s;
     }
 
@@ -644,9 +610,6 @@
       font-weight: 600;
     }
 
-    /* ==========================================================================
-       8. COLONNE DROITE : HISTORIQUE DES TIRAGES
-       ========================================================================== */
     .history-panel {
       background: var(--bg-panel);
       border: 1px solid var(--border-subtle);
@@ -751,9 +714,6 @@
       font-size: 0.84rem;
     }
 
-    /* ==========================================================================
-       9. MODALE D'ÉDITION (RENOMMER LE POSTE / OPÉRATEUR)
-       ========================================================================== */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -813,6 +773,17 @@
       margin-top: 8px;
     }
 
+    .btn-cancel {
+      background: var(--bg-panel-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
     .btn-save {
       background: var(--accent-gold);
       color: #090e1a;
@@ -822,5 +793,65 @@
       font-weight: 800;
       font-size: 0.88rem;
       cursor: pointer;
-      
- </html>   
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti-canvas"></canvas>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">5S</div>
+        <div>
+          <div class="brand-title">
+            <span>TIRAGE 5S — ZONE <span class="highlight">GROSSE COMMANDE</span></span>
+            <span class="badge-rituel">Rituel quotidien d'équipe</span>
+          </div>
+          <p class="brand-subtitle">Cochez les postes actifs du jour, ajoutez ou retirez des postes à la volée, puis lancez le tirage</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="pill-info">
+          <span class="dot-pulse"></span>
+          <span id="active-count-badge">8 / 8 postes actifs</span>
+        </div>
+        <button type="button" id="btn-toggle-sound" class="btn-sound" title="Activer ou couper les effets sonores">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label">Son ON</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    <div class="left-column">
+      <section class="stage-box">
+        <div class="stage-info">
+          <div class="stage-kicker" id="stage-kicker">🎲 Prêt pour le tirage</div>
+          <div class="stage-headline" id="stage-headline">En attente du lancement</div>
+          <p class="stage-subtext" id="stage-subtext">Seuls les postes cochés participent au tirage au sort.</p>
+        </div>
+
+        <div class="stage-action">
+          <button type="button" id="btn-launch" class="btn-launch">
+            <span>▶</span>
+            <span>LANCER LE TIRAGE</span>
+          </button>
+          <span class="stage-hint">Raccourci : touche Espace</span>
+        </div>
+
+        <div id="inline-banner" class="inline-banner">
+          <span id="inline-banner-text">⚠️ Aucun poste coché ! Cochez au moins 1 poste pour lancer le tirage.</span>
+        </div>
+      </section>
+
+      <section class="toolbar-box">
+        <div class="toolbar-row">
+          <form id="add-station-form" class="add-form">
+            <input
+              type="text"
+              id="new-station-input"
+              class="input-dark"
+              placeholder="Nouveau poste (ex: Poste 9,
