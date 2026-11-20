@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COMMANDE - 5S — Rituel Quotidien d'Équipe</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-text: #0f172a;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 16px 48px;
+      line-height: 1.45;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .badge-5s {
+      background: linear-gradient(135deg, #fbbf24, #d97706);
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fbbf24;
+      letter-spacing: 0.02em;
+    }
+
+    .pill-ritual {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .status-chip {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--success);
+      display: inline-block;
+    }
+
+    .draw-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    .draw-tag {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .draw-result {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      min-height: 2.6rem;
+      color: var(--text);
+    }
+
+    .draw-result.winner {
+      color: #fbbf24;
+    }
+
+    .draw-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 22px;
+    }
+
+    .btn-draw {
+      background: linear-gradient(135deg, #fbbf24, #ea580c);
+      color: var(--accent-text);
+      border: none;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 14px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: transform 0.12s ease, filter 0.12s ease;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .btn-draw:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    .btn-draw:active {
+      transform: translateY(1px);
+    }
+
+    .shortcut-hint {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .manage-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .add-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .input-post {
+      flex: 1 1 220px;
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    .input-post::placeholder {
+      color: var(--muted);
+    }
+
+    .btn-add {
+      background: #ea580c;
+      color: #fff;
+      border: none;
+      font-weight: 700;
+      padding: 11px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.92rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .btn-tool {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-tool:hover {
+      border-color: #fbbf24;
+    }
+
+    .posts-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 10px;
+    }
+
+    .post-item {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .post-item.active {
+      border-color: rgba(16, 185, 129, 0.55);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .post-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .post-name {
+      font-size: 0.92rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-del {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .btn-del:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .footer-tip {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .footer-count {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="title-row">
+        <div class="badge-5s">5S</div>
+        <h1>COMMANDE</h1>
+      </div>
+      <div class="pill-ritual">Rituel quotidien d'équipe</div>
+      <p class="subtitle">Cochez les postes actifs du jour, ajoutez ou retirez des postes à la volée, puis lancez le tirage</p>
+      <div class="status-bar">
+        <div class="status-chip" id="activeCountChip">
+          <span class="dot"></span>
+          <span id="activeCountText">8 / 8 postes actifs</span>
+        </div>
+        <button type="button" class="status-chip" id="soundToggleBtn">
+          <span id="soundIcon">🔊</span>
+          <span id="soundLabel">Son ON</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="draw-card" aria-live="polite">
+      <div class="draw-tag">🎲 Prêt pour le tirage</div>
+      <div class="draw-result" id="drawResult">En attente du lancement</div>
+      <p class="draw-desc" id="drawDesc">Seuls les postes cochés participent au tirage au sort.</p>
+      <button type="button" class="btn-draw" id="drawBtn">▶ Lancer le tirage</button>
+      <div class="shortcut-hint">Raccourci : touche Espace</div>
+    </section>
+
+    <section class="manage-card">
+      <form class="add-form" id="addPostForm">
+        <input
+          type="text"
+          class="input-post"
+          id="newPostInput"
+          placeholder="Nouveau poste (ex: Poste 9, Zone Expé...)"
+          maxlength="50"
+        />
+        <button type="submit" class="btn-add">+ Ajouter un poste</button>
+      </form>
+
+      <div class="toolbar">
+        <button type="button" class="btn-tool" id="checkAllBtn">☑ Tout cocher</button>
+        <button type="button" class="btn-tool" id="uncheckAllBtn">☐ Tout décocher</button>
+        <button type="button" class="btn-tool" id="resetBtn">↺ Réinitialiser</button>
+      </div>
+
+      <div class="posts-list" id="postsList"></div>
+
+      <p class="footer-tip" style="margin-top: 14px;">Astuce : cliquez sur une carte ou sa case pour l'inclure/exclure du tirage.</p>
+      <div class="footer-count" id="totalConfigText">8 postes configurés</div>
+    </section>
+  </div>
+
+  <script>
+    const DEFAULT_POSTS = [
+      "Poste 1",
+      "Poste 2",
+      "Poste 3",
+      "Poste 4",
+      "Poste 5",
+      "Poste 6",
+      "Poste 7",
+      "Poste 8"
+    ];
+
+    const STORAGE_KEY = "commande_5s_postes_v1";
+
+    let state = loadState();
+    let soundEnabled = true;
+    let isDrawing = false;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch (e) {}
+      return DEFAULT_POSTS.map((name, idx) => ({
+        id: "p_" + (idx + 1),
+        name,
+        active: true
+      }));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function playBeep(freq = 660, duration = 0.09) {
+      if (!soundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.value = 0.08;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function render() {
+      const postsList = document.getElementById("postsList");
+      const activeCountText = document.getElementById("activeCountText");
+      const totalConfigText = document.getElementById("totalConfigText");
+
+      const activePosts = state.filter((p) => p.active);
+      activeCountText.textContent = `${activePosts.length} / ${state.length} postes actifs`;
+      totalConfigText.textContent = `${state.length} ${state.length > 1 ? "postes configurés" : "poste configuré"}`;
+
+      postsList.innerHTML = "";
+      state.forEach((post) => {
+        const item = document.createElement("div");
+        item.className = "post-item" + (post.active ? " active" : "");
+
+        const left = document.createElement("div");
+        left.className = "post-left";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = post.active;
+        cb.addEventListener("change", (e) => {
+          e.stopPropagation();
+          post.active = cb.checked;
+          saveState();
+          render();
+        });
+
+        const label = document.createElement("span");
+        label.className = "post-name";
+        label.textContent = post.name;
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "btn-del";
+        delBtn.title = "Supprimer le poste";
+        delBtn.textContent = "×";
+        delBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          state = state.filter((p) => p.id !== post.id);
+          saveState();
+          render();
+        });
+
+        item.addEventListener("click", () => {
+          post.active = !post.active;
+          saveState();
+          render();
+        });
+
+        left.appendChild(cb);
+        left.appendChild(label);
+        item.appendChild(left);
+        item.appendChild(delBtn);
+        postsList.appendChild(item);
+      });
+    }
+
+    function startDraw() {
+      if (isDrawing) return;
+      const activePosts = state.filter((p) => p.active);
+      const resultEl = document.getElementById("drawResult");
+      const descEl = document.getElementById("drawDesc");
+
+      if (activePosts.length === 0) {
+        resultEl.classList.remove("winner");
+        resultEl.textContent = "Aucun poste actif";
+        descEl.textContent = "Cochez au moins un poste avant de lancer le tirage.";
+        playBeep(240, 0.18);
+        return;
+      }
+
+      isDrawing = true;
+      resultEl.classList.remove("winner");
+      descEl.textContent = "Tirage au sort en cours...";
+
+      let ticks = 0;
+      const maxTicks = 16;
+      const interval = setInterval(() => {
+        const candidate = activePosts[Math.floor(Math.random() * activePosts.length)];
+        resultEl.textContent = candidate.name;
+        playBeep(520 + (ticks % 5) * 70, 0.05);
+        ticks++;
+
+        if (ticks >= maxTicks) {
+          clearInterval(interval);
+          const winner = activePosts[Math.floor(Math.random() * activePosts.length)];
+          resultEl.textContent = winner.name;
+          resultEl.classList.add("winner");
+          descEl.textContent = `Poste désigné pour le rituel 5S (${activePosts.length} postes en lice).`;
+          playBeep(880, 0.18);
+          isDrawing = false;
+        }
+      }, 85);
+    }
+
+    document.getElementById("addPostForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("newPostInput");
+      const val = input.value.trim();
+      if (!val) return;
+      state.push({
+        id: "p_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        name: val,
+        active: true
+      });
+      input.value = "";
+      saveState();
+      render();
+    });
+
+    document.getElementById("checkAllBtn").addEventListener("click", () => {
+      state.forEach((p) => (p.active = true));
+      saveState();
+      render();
+    });
+
+    document.getElementById("uncheckAllBtn").addEventListener("click", () => {
+      state.forEach((p) => (p.active = false));
+      saveState();
+      render();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      state = DEFAULT_POSTS.map((name, idx) => ({
+        id: "p_" + (idx + 1),
+        name,
+        active: true
+      }));
+      saveState();
+      document.getElementById("drawResult").classList.remove("winner");
+      document.getElementById("drawResult").textContent = "En attente du lancement";
+      document.getElementById("drawDesc").textContent = "Seuls les postes cochés participent au tirage au sort.";
+      render();
+    });
+
+    document.getElementById("soundToggleBtn").addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById("soundIcon").textContent = soundEnabled ? "🔊" : "🔇";
+      document.getElementById("soundLabel").textContent = soundEnabled ? "Son ON" : "Son OFF";
+    });
+
+    document.getElementById("drawBtn").addEventListener("click", startDraw);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && document.activeElement.tagName !== "INPUT") {
+        e.preventDefault();
+        startDraw();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
